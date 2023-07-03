@@ -1,0 +1,193 @@
+Amsterdam, Am
+Angora, Ang
+Athina, Ath
+Barcelona, Bar
+Berlin, Ber
+Brest, Bre
+Brindisi, Bri
+Bruxelles, Bru
+Bucuresti, Buc
+Budapest, Bud
+Cadiz, Cad
+Constantinople, Con
+Danzig, Dan
+Dieppe, Die
+Edinburgh, Edi
+Erzurum, Erz
+Essen, Ess
+Frankfurt, Fra
+Kharkov, Kha
+Kobenhavn, Kob
+Kyiv, Kyi
+Lisboa, Lis
+London, Lon
+Madrid, Mad
+Marseille, Mar
+Moskva, Mos
+Munchen, Mun
+Palermo, Pal
+Pamplona, Pam
+Paris, Par
+Petrograd, Pet
+Riga, Rig
+Roma, Rom
+Rostov, Ros
+Sarajevo, Sar
+Sevastopol, Sev
+Smolensk, Smo
+Smyrna, Smy
+Sochi, Soc
+Sofia, Sof
+Stockholm, Sto
+Venezia, Ven
+Warszawa, War
+Wien, Wie
+Wilno, Wil
+Zagrab, Zag
+Zurich, Zur
+#### Connections
+Lon Edi Black 4 F 0
+Lon Edi Orange 4 F 0
+Lon Am Any 2 F 2
+Lon Die Any 2 F 1
+Lon Die Any 2 F 1
+Die Bre Orange 2 F 0
+Die Par Pink 1 F 0
+Die Bru Green 2 F 0
+Bre Par Black 3 F 0
+Bre Pam Pink 4 F 0
+Pam Par Blue 4 F 0
+Pam Par Green 4 F 0
+Pam Mad Black 3 T 0
+Pam Mad White 3 T 0
+Pam Bar Any 2 F 0
+Pam Mar Red 4 F 0
+Mad Lis Pink 3 F 0
+Mad Bar Yellow 2 F 0
+Mad Cad Orange 3 F 0
+Lis Cad Blue 2 F 0
+Bar Mar Any 4 F 0
+Par Bru Yellow 2 F 0
+Par Bru Red 2 F 0
+Par Fra White 3 F 0
+Par Fra Orange 3 F 0
+Par Zur Any 3 T 0
+Par Mar Any 4 F 0
+Bru Am Black 1 F 0
+Bru Fra Blue 2 F 0
+Am Ess Yellow 3 F 0
+Am Fra White 2 F 0
+Mar Zur Pink 2 T 0
+Mar Rom Any 4 T 0
+Zur Mun Yellow 2 T 0
+Zur Ven Green 2 T 0
+Fra Ess Green 2 F 0
+Fra Ber Black 3 F 0
+Fra Ber Red 3 F 0
+Fra Mun Pink 2 F 0
+Ess Ber Blue 2 F 0
+Ess Kob Any 3 F 1
+Mun Wie Orange 3 F 0
+Mun Ven Blue 2 T 0
+Ven Zag Any 2 F 0
+Ven Rom Black 2 F 0
+Rom Bri White 2 F 0
+Rom Pal Any 4 F 1
+Pal Bri Any 3 F 1
+Pal Smy Any 6 F 2
+Kob Sto Yellow 3 F 0
+Kob Sto White 3 F 0
+Ber Dan Any 4 F 0
+Ber War Pink 4 F 0
+Ber War Yellow 4 F 0
+Ber Wie Green 3 F 0
+Wie Bud Red 1 F 0
+Wie Bud White 1 F 0
+Wie Zag Any 2 F 0
+Zag Bud Orange 2 F 0
+Zag Sar Red 3 F 0
+Bri Ath Any 4 F 0
+Sto Pet Any 8 T 0
+Bud Kyi Any 6 T 0
+Bud Buc Any 4 T 0
+Bud Sar Pink 3 F 0
+Dan War Any 2 F 0
+Dan Rig Any 3 F 0
+Sar Sof Any 2 T 0
+Sar Ath Green 4 F 0
+War Wil Red 3 F 0
+War Kyi Any 4 F 0
+Ath Sof Pink 3 F 0
+Ath Smy Any 2 F 1
+Sof Con Blue 3 F 0
+Sof Buc Any 2 T 0
+Rig Pet Any 4 F 0
+Rig Wil Green 4 F 0
+Buc Kyi Any 4 F 0
+Buc Sev White 4 F 0
+Buc Con Yellow 3 F 0
+Smy Con Any 2 T 0
+Smy Ang Orange 3 T 0
+Wil Kyi Any 2 F 0
+Wil Smo Yellow 3 F 0
+Wil Pet Blue 4 F 0
+Con Sev Any 4 F 2
+Con Ang Any 2 T 0
+Kyi Smo Red 3 F 0
+Kyi Kha Any 4 F 0
+Pet Mos White 4 F 0
+Smo Mos Orange 2 F 0
+Sev Ros Any 4 F 0
+Sev Soc Any 2 F 1
+Sev Erz Any 4 F 2
+Kha Mos Any 4 F 0
+Kha Ros Green 2 F 0
+Erz Soc Red 3 F 0
+Soc Ros Any 2 F 0
+#### Routes
+Ath Ang 5
+Bud Sof 5
+Fra Kob 5
+Ros Erz 5
+Sof Smy 5
+Kyi Pet 6
+Zur Bri 6
+Zur Bud 6
+War Smo 6
+Zag Bri 6
+Par Zag 7
+Bre Mar 7
+Lon Ber 7
+Edi Par 7
+Am Pam 7
+Rom Smy 8
+Pal Con 8
+Sar Sev 8
+Mad Die 8
+Bar Bru 8
+Par Wie 8
+Bar Mun 8
+Bre Ven 8
+Smo Ros 8
+Mar Ess 8
+Kyi Soc 8
+Mad Zur 8
+Ber Buc 8
+Bru Dan 9
+Ber Rom 9
+Ang Kha 10
+Rig Buc 10
+Ess Kyi 10
+Ven Con 10
+Lon Wie 10
+Ath Wil 11
+Sto Wie 11
+Ber Mos 12
+Am Wil 12
+Fra Smo 13
+Lis Dan 20
+Bre Pet 20
+Pal Mos 20
+Kob Erz 21
+Edi Ath 21
+Cad Sto 21
