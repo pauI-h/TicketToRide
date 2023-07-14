@@ -16,3 +16,6 @@ class DumbPlayer(Player):
 
     def calculateMapRep(self, connections):
         pass
+
+    def drawCardTurn(self, map_rep) -> int:
+        pass
