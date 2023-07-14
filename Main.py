@@ -76,10 +76,10 @@ def scoreGame(players, connections, len_score_map: dict, city_connection_map: di
             if route.checkCompleted(connections, player, city_connection_map):
                 score[player] += route.getValue()
 
-    start_node: City = connections[0].getLocations()[0]
     longest_len = 0
     longest_player = None
     for player in players:
+        start_node = list(player.getLocations())[0]  # Ensures start node is an element of the graph
         length_one, edges = findLongestRoute(start_node, [], city_connection_map, player)
         length_two, edges_two = findLongestRoute(start_node, edges, city_connection_map, player)
         total_length = length_one + length_two

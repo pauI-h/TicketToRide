@@ -23,6 +23,9 @@ class Player(ABC):
     def getRoutes(self):
         return self.__routes
 
+    def getLocations(self):
+        return self.__locations.copy()  # Copy stops editing using pass by reference
+
     def __tryPlace(self, connection, colour):
         result, norm_used, loco_used = connection.use(self.__hand, colour, self.__deck)
         if result:
