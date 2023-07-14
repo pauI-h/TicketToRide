@@ -1,4 +1,5 @@
 import math
+import sys
 
 from Auxilary import *
 from Colour import Colour
@@ -50,7 +51,7 @@ def main(map: str, map_folder: str):
     print()
 
 
-def turn(players, connections, stop=math.inf) -> int:
+def turn(players, connections, stop=sys.maxsize) -> int:  # Max size doesn't produce type warnings
     end_player = math.inf
     for i in range(max(len(players), stop)):
         player = players[i]
