@@ -23,6 +23,9 @@ class Connection:
     def getColourAndLength(self):
         return self.__colour, self.__length
 
+    def getLength(self):
+        return self.__length
+
     def isTunnel(self):
         return self.__tunnel
 

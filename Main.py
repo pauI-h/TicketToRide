@@ -4,6 +4,7 @@ from Auxilary import *
 from Colour import Colour
 from Deck import Deck
 from DumbPlayer import DumbPlayer
+from Player import Player
 
 
 def main(map: str, map_folder: str):
@@ -74,11 +75,60 @@ def scoreGame(players, connections, len_score_map: dict, city_connection_map: di
             if route.checkCompleted(connections, player, city_connection_map):
                 score[player] += route.getValue()
 
-    # TODO Calc Longest route
+    start_node: City = connections[0].getLocations()[0]
+    longest_len = 0
+    longest_player = None
+    for player in players:
+        length_one, edges = findLongestRoute(start_node, [], city_connection_map, player)
+        length_two, edges_two = findLongestRoute(start_node, edges, city_connection_map, player)
+        total_length = length_one + length_two
+        if total_length > longest_len:
+            longest_player = player
+            longest_len = total_length
+
+    score[longest_player] += 10
+
+    return score
+
+
+def findLongestRoute(node: City, seen_edges: list, city_connection_map: dict,
+                     player: Player) -> (int, list):
+    outward_connections = city_connection_map[node]
+    valid_outward = []
+    for connection in outward_connections:
+        if connection not in seen_edges and connection.getController() == player:
+            valid_outward.append(connection)
+
+    if len(valid_outward) == 0:  # No valid continuation from this point
+        return 0, []
+
+    elif len(valid_outward) == 1:  # Only one option
+        edges_used = seen_edges + valid_outward
+        ends = list(valid_outward[0].getLocations())
+        ends.remove(node)
+        return findLongestRoute(ends[0], edges_used, city_connection_map, player)
+
+    else:  # Go through all the options
+        longest = -1
+        longest_edges_used = []
+        for connection in valid_outward:
+            ends = list(connection.getLocations())
+            ends.remove(node)
+            edges_used = seen_edges + [connection]
+            length = findLongestRoute(ends[0], edges_used, city_connection_map, player)
+            if length > longest:
+                longest_edges_used = edges_used
+                longest = length
+            if length == longest and len(longest_edges_used) < len(edges_used):
+                longest_edges_used = edges_used
+                longest = length
+
+        return longest, longest_edges_used
 
 
 def game(players, connections):
     stop = math.inf
+    finished = False
     while not finished:
         stop = turn(players, connections)
         if stop != math.inf:
@@ -86,7 +136,7 @@ def game(players, connections):
 
     turn(players, connections, stop)
 
-    scoreGame(players, connections, {})
+    scoreGame(players, connections, {}, {})
 
 
 if __name__ == "__main__":
