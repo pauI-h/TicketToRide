@@ -15,6 +15,7 @@ class Route:
         return self.__value
 
     def checkCompleted(self, connections: list, player: Player, city_connection_map: dict):
+        # TODO Add check for if in player locations
         start_found = False
         end_found = False
 

@@ -13,6 +13,7 @@ class Player(ABC):
         self.__trains = trains
         self.__deck = deck
         self.__colour_pos_map = deck.getColourPosMap()
+        self.__locations = set()
         for colour in Colour:
             self.__hand[colour] = 0
 
@@ -27,6 +28,9 @@ class Player(ABC):
         if result:
             self.__hand[colour] -= norm_used
             self.__hand[Colour.ANY] -= loco_used
+            # Updates the locations connected by the player
+            self.__locations.add(connection.getLocations()[0])
+            self.__locations.add(connection.getLocations()[1])
 
     @abstractmethod
     def drawCardTurn(self, map_rep) -> int:
