@@ -68,7 +68,7 @@ def scoreGame(players, connections, len_score_map: dict, city_connection_map: di
 
     for connection in connections:  # Counts the points from trains
         if connection.getController() is not None:
-            score[connection.getController] += len_score_map[connection.getColourAndLength[1]]
+            score[connection.getController()] += len_score_map[connection.getLength()]
 
     for player in players:  # Counts points from route
         routes = player.getRoutes()
