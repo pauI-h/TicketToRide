@@ -12,7 +12,8 @@ from Route import Route
 class TestScoring(TestCase):
 
     def setUp(self):
-        self.player = TestPlayer(0, Deck(1, 1))
+        self.player_a = TestPlayer(0, Deck(1, 1))
+        self.player_b = TestPlayer(0, Deck(1, 1))
         self.place_a = City("a")
         self.place_b = City("b")
         self.place_c = City("c")
@@ -25,34 +26,37 @@ class TestScoring(TestCase):
 
     def testNoPlayerLocations(self):
         # Checks correct score when no trains placed
-        score = scoreGame([self.player], self.connections, {1: 0},
+        score = scoreGame([self.player_a], self.connections, {1: 0},
                           self.loc_con_map)
 
-        assert score[self.player] == 0
+        assert score[self.player_a] == 0
 
     def testScoreOneConnection(self):
         # Tests if the score from one connection_a_b is correct
-        self.connection_a_b.use({Colour.YELLOW: 1, Colour.ANY: 0}, Colour.YELLOW, None, self.player)
+        self.connection_a_b.use({Colour.YELLOW: 1, Colour.ANY: 0}, Colour.YELLOW, None,
+                                self.player_a)
 
-        score = scoreGame([self.player], self.connections, {1: 1}, self.loc_con_map)
-        assert score[self.player] == 1
+        score = scoreGame([self.player_a], self.connections, {1: 1}, self.loc_con_map)
+        assert score[self.player_a] == 1
 
     def testRouteSingle(self):
         # Check correct score when single route completed
         route = Route(self.place_a, self.place_b, 1)
-        self.player.addRoute(route)
-        self.player.add_to_hand(Colour.YELLOW)
-        self.player._tryPlace(self.connection_a_b, Colour.YELLOW)
-        score = scoreGame([self.player], self.connections, {1: 0}, self.loc_con_map)[self.player]
+        self.player_a.addRoute(route)
+        self.player_a.add_to_hand(Colour.YELLOW)
+        self.player_a._tryPlace(self.connection_a_b, Colour.YELLOW)
+        score = scoreGame([self.player_a], self.connections, {1: 0}, self.loc_con_map)[
+            self.player_a]
         correct = score == 11  # 11 as 10 for longest route
         if not correct:
             print(score)
         assert score == 11
 
     def testLongestRouteSingle(self):
-        self.player.add_to_hand(Colour.YELLOW)
-        self.player._tryPlace(self.connection_a_b, Colour.YELLOW)
-        score = scoreGame([self.player], self.connections, {1: 0}, self.loc_con_map)[self.player]
+        self.player_a.add_to_hand(Colour.YELLOW)
+        self.player_a._tryPlace(self.connection_a_b, Colour.YELLOW)
+        score = scoreGame([self.player_a], self.connections, {1: 0}, self.loc_con_map)[
+            self.player_a]
         correct_score = 10
         correct = score == correct_score  # 11 as 10 for longest route
         if not correct:
@@ -60,14 +64,29 @@ class TestScoring(TestCase):
         assert score == correct_score
 
     def testLongestRouteTwoOptions(self):
-        self.player.add_to_hand(Colour.YELLOW)
-        self.player._tryPlace(self.connection_a_b, Colour.YELLOW)
-        self.player.add_to_hand(Colour.YELLOW)
-        self.player.add_to_hand(Colour.YELLOW)
-        self.player._tryPlace(self.connection_a_c, Colour.YELLOW)
-        longest_route = findLongestRoute(self.place_a, [], self.loc_con_map, self.player)[0]
+        self.player_a.add_to_hand(Colour.YELLOW)
+        self.player_a._tryPlace(self.connection_a_b, Colour.YELLOW)
+        self.player_a.add_to_hand(Colour.YELLOW)
+        self.player_a.add_to_hand(Colour.YELLOW)
+        self.player_a._tryPlace(self.connection_a_c, Colour.YELLOW)
+        longest_route = findLongestRoute(self.place_a, [], self.loc_con_map, self.player_a)[0]
         correct_longest_route = 2
         correct = longest_route == correct_longest_route
         if not correct:
             print(longest_route)
         assert longest_route == 2
+
+    def testLongestRouteCorrectAllocation(self):
+        self.player_b.add_to_hand(Colour.YELLOW)
+        self.player_b._tryPlace(self.connection_a_b, Colour.YELLOW)
+        self.player_a.add_to_hand(Colour.YELLOW)
+        self.player_a.add_to_hand(Colour.YELLOW)
+        self.player_a._tryPlace(self.connection_a_c, Colour.YELLOW)
+
+        score = scoreGame([self.player_a, self.player_b], self.connections, {1: 0, 2: 0},
+                          self.loc_con_map)[self.player_a]
+        correct_score = 10
+        correct = score == correct_score  # 11 as 10 for longest route
+        if not correct:
+            print(score)
+        assert score == correct_score
