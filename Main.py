@@ -96,30 +96,47 @@ def scoreGame(players, connections, len_score_map: dict, city_connection_map: di
 def findPlayerLongestRoute(city_connection_map, player):
     if len(player.getLocations()) == 0:
         return 0
-    start_node = list(player.getLocations())[0]  # Ensures start node is an element of the graph
-    length_one, edges = findLongestRoute(start_node, [], city_connection_map, player)
-    length_two, edges_two = findLongestRoute(start_node, edges, city_connection_map, player)
-    total_length = length_one + length_two
-    return total_length
+    locations: set = player.getLocations()
+    longest_len = -1
+    while len(locations) != 0:
+        start_node = sorted(list(locations))[0]
+        # Ensures start node is an element of the graph, sorted removes randomness from set
+        length_one, edges_one, nodes_seen_one = \
+            findLongestRoute(start_node, [], city_connection_map, player)
+        length_two, edges_two, nodes_seen_two = \
+            findLongestRoute(start_node, edges_one, city_connection_map, player)
+        total_length = length_one + length_two
+        if total_length > longest_len:
+            longest_len = total_length
+        # print(locations)
+        # print(nodes_seen_one)
+        # print(nodes_seen_two)
+        locations = locations.difference(nodes_seen_one)
+        locations = locations.difference(nodes_seen_two)
+    return longest_len
 
 
 def findLongestRoute(node: City, seen_edges: list, city_connection_map: dict,
-                     player: Player) -> (int, list):
+                     player: Player) -> (int, list, set):
     outward_connections = city_connection_map[node]
     valid_outward = []
     for connection in outward_connections:
         if connection not in seen_edges and connection.getController() == player:
             valid_outward.append(connection)
 
+    nodes_seen = {node}
     if len(valid_outward) == 0:  # No valid continuation from this point
-        return 0, []
+        return 0, [], nodes_seen
 
     elif len(valid_outward) == 1:  # Only one option
         edges_used = seen_edges + valid_outward
         ends = list(valid_outward[0].getLocations())
         ends.remove(node)
-        next_len, next_edges = findLongestRoute(ends[0], edges_used, city_connection_map, player)
-        return next_len + valid_outward[0].getLength(), next_edges+edges_used
+        next_len, next_edges, new_nodes = findLongestRoute(ends[0], edges_used, city_connection_map,
+                                                           player)
+        nodes_seen = nodes_seen.union(new_nodes)
+        return next_len + valid_outward[0].getLength(), next_edges + edges_used, nodes_seen
+
 
     else:  # Go through all the options
         longest = -1
@@ -127,11 +144,13 @@ def findLongestRoute(node: City, seen_edges: list, city_connection_map: dict,
         for connection in valid_outward:
             ends = list(connection.getLocations())
             ends.remove(node)
+            nodes_seen.add(ends[0])
             edges_used = seen_edges + [connection]
-            length, new_edges_used = findLongestRoute(ends[0], edges_used, city_connection_map,
-                                                      player)
+            length, new_edges_used, new_nodes_seen = \
+                findLongestRoute(ends[0], edges_used, city_connection_map, player)
             length += connection.getLength()
             edges_used += new_edges_used
+            nodes_seen = nodes_seen.union(new_nodes_seen)
             if length > longest:
                 longest_edges_used = edges_used
                 longest = length
@@ -139,7 +158,7 @@ def findLongestRoute(node: City, seen_edges: list, city_connection_map: dict,
                 longest_edges_used = edges_used
                 longest = length
 
-        return longest, longest_edges_used
+        return longest, longest_edges_used, nodes_seen
 
 
 def game(players, connections):
