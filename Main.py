@@ -4,8 +4,8 @@ import sys
 from Auxilary import *
 from Colour import Colour
 from Deck import Deck
-from DumbPlayer import DumbPlayer
-from Player import Player
+from Players.DumbPlayer import DumbPlayer
+from Players.Player import Player
 
 
 def main(map: str, map_folder: str):

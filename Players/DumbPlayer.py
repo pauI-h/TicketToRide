@@ -1,4 +1,4 @@
-from Player import Player
+from Players.Player import Player
 
 
 class DumbPlayer(Player):

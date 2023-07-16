@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 
+
 from Colour import Colour
 from Deck import Deck
 
@@ -9,7 +10,7 @@ class Player(ABC):
     def __init__(self, trains: int, deck: Deck):
         self.__controlled_routes = []
         self.__hand = {}
-        self.__routes = []
+        self._routes = []
         self.__trains = trains
         self.__deck = deck
         self.__colour_pos_map = deck.getColourPosMap()
@@ -17,17 +18,21 @@ class Player(ABC):
         for colour in Colour:
             self.__hand[colour] = 0
 
+    @property
+    def routes(self):
+        return self._routes
+
     def add_to_hand(self, colour):
         self.__hand[colour] += 1
 
     def getRoutes(self):
-        return self.__routes
+        return self._routes
 
     def getLocations(self):
         return self.__locations.copy()  # Copy stops editing using pass by reference
 
-    def __tryPlace(self, connection, colour):
-        result, norm_used, loco_used = connection.use(self.__hand, colour, self.__deck)
+    def _tryPlace(self, connection, colour):
+        result, norm_used, loco_used = connection.use(self.__hand, colour, self.__deck, self)
         if result:
             self.__hand[colour] -= norm_used
             self.__hand[Colour.ANY] -= loco_used

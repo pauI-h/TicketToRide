@@ -1,5 +1,5 @@
 from City import City
-from Player import Player
+from Players.Player import Player
 
 
 class Route:
