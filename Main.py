@@ -121,7 +121,10 @@ def findLongestRoute(node: City, seen_edges: list, city_connection_map: dict,
             ends = list(connection.getLocations())
             ends.remove(node)
             edges_used = seen_edges + [connection]
-            length = findLongestRoute(ends[0], edges_used, city_connection_map, player)
+            length, new_edges_used = findLongestRoute(ends[0], edges_used, city_connection_map,
+                                                      player)
+            length += connection.getLength()
+            edges_used += new_edges_used
             if length > longest:
                 longest_edges_used = edges_used
                 longest = length
