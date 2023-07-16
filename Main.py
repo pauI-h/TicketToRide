@@ -101,13 +101,24 @@ def findPlayerLongestRoute(city_connection_map, player):
     while len(locations) != 0:
         start_node = sorted(list(locations))[0]
         # Ensures start node is an element of the graph, sorted removes randomness from set
-        length_one, edges_one, nodes_seen_one = \
+        length_one, edges_one, nodes_seen_one, end_one = \
             findLongestRoute(start_node, [], city_connection_map, player)
-        length_two, edges_two, nodes_seen_two = \
+        length_two, edges_two, nodes_seen_two, end_two = \
             findLongestRoute(start_node, edges_one, city_connection_map, player)
         total_length = length_one + length_two
-        if total_length > longest_len:
-            longest_len = total_length
+
+        length_test, edges_test, nodes_seen_test, end_test = \
+            findLongestRoute(end_one, [], city_connection_map, player)
+        test_start = end_one
+        target_end = end_two
+        while end_test != target_end:
+            target_end = test_start
+            test_start = end_test
+            length_test, edges_test, nodes_seen_test, end_test = \
+                findLongestRoute(test_start, [], city_connection_map, player)
+
+        if length_test > longest_len:
+            longest_len = length_test
         # print(locations)
         # print(nodes_seen_one)
         # print(nodes_seen_two)
@@ -117,7 +128,7 @@ def findPlayerLongestRoute(city_connection_map, player):
 
 
 def findLongestRoute(node: City, seen_edges: list, city_connection_map: dict,
-                     player: Player) -> (int, list, set):
+                     player: Player) -> (int, list, set, City):
     outward_connections = city_connection_map[node]
     valid_outward = []
     for connection in outward_connections:
@@ -126,27 +137,27 @@ def findLongestRoute(node: City, seen_edges: list, city_connection_map: dict,
 
     nodes_seen = {node}
     if len(valid_outward) == 0:  # No valid continuation from this point
-        return 0, [], nodes_seen
+        return 0, [], nodes_seen, node
 
     elif len(valid_outward) == 1:  # Only one option
         edges_used = seen_edges + valid_outward
         ends = list(valid_outward[0].getLocations())
         ends.remove(node)
-        next_len, next_edges, new_nodes = findLongestRoute(ends[0], edges_used, city_connection_map,
-                                                           player)
+        next_len, next_edges, new_nodes, end = findLongestRoute(ends[0], edges_used,
+                                                                city_connection_map, player)
         nodes_seen = nodes_seen.union(new_nodes)
-        return next_len + valid_outward[0].getLength(), next_edges + edges_used, nodes_seen
-
+        return next_len + valid_outward[0].getLength(), next_edges + edges_used, nodes_seen, end
 
     else:  # Go through all the options
         longest = -1
         longest_edges_used = []
+        furthest_end = None
         for connection in valid_outward:
             ends = list(connection.getLocations())
             ends.remove(node)
             nodes_seen.add(ends[0])
             edges_used = seen_edges + [connection]
-            length, new_edges_used, new_nodes_seen = \
+            length, new_edges_used, new_nodes_seen, end = \
                 findLongestRoute(ends[0], edges_used, city_connection_map, player)
             length += connection.getLength()
             edges_used += new_edges_used
@@ -154,11 +165,13 @@ def findLongestRoute(node: City, seen_edges: list, city_connection_map: dict,
             if length > longest:
                 longest_edges_used = edges_used
                 longest = length
+                furthest_end = end
             if length == longest and len(longest_edges_used) < len(edges_used):
                 longest_edges_used = edges_used
                 longest = length
+                furthest_end = end
 
-        return longest, longest_edges_used, nodes_seen
+        return longest, longest_edges_used, nodes_seen, furthest_end
 
 
 def game(players, connections):

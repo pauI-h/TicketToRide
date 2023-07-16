@@ -17,12 +17,23 @@ class TestScoring(TestCase):
         self.place_a = City("a")
         self.place_b = City("b")
         self.place_c = City("c")
+        self.place_d = City("d")
+        self.place_e = City("e")
         self.connection_a_b = Connection(self.place_a, self.place_b, Colour.ANY, 1, False, 0)
         self.connection_a_c = Connection(self.place_a, self.place_c, Colour.ANY, 2, False, 0)
-        self.connections = [self.connection_a_b, self.connection_a_c]
-        self.loc_con_map = {self.place_a: [self.connections[0], self.connections[1]],
-                            self.place_b: [self.connections[0]],
-                            self.place_c: [self.connections[1]]}
+        self.connection_b_c = Connection(self.place_b, self.place_c, Colour.ANY, 2, False, 0)
+        self.connection_b_d = Connection(self.place_b, self.place_d, Colour.ANY, 4, False, 0)
+        self.connection_d_e = Connection(self.place_d, self.place_e, Colour.ANY, 4, False, 0)
+
+        self.connections = [self.connection_a_b, self.connection_a_c,
+                            self.connection_b_c, self.connection_b_d,
+                            self.connection_d_e]
+        self.loc_con_map = {self.place_a: [self.connection_a_b, self.connection_a_c],
+                            self.place_b: [self.connection_a_b, self.connection_b_c,
+                                           self.connection_b_d],
+                            self.place_c: [self.connection_a_c, self.connection_b_c],
+                            self.place_d: [self.connection_d_e, self.connection_b_d],
+                            self.place_e: [self.connection_d_e]}
 
     def testNoPlayerLocations(self):
         # Checks correct score when no trains placed
@@ -43,7 +54,7 @@ class TestScoring(TestCase):
         # Check correct score when single route completed
         route = Route(self.place_a, self.place_b, 1)
         self.player_a.addRoute(route)
-        self.player_a_place_a_b()
+        self.placeRoute(self.player_a, self.connection_a_b)
         score = scoreGame([self.player_a], self.connections, {1: 0}, self.loc_con_map)[
             self.player_a]
         correct = score == 11  # 11 as 10 for longest route
@@ -52,7 +63,7 @@ class TestScoring(TestCase):
         assert score == 11
 
     def testLongestRouteSingle(self):
-        self.player_a_place_a_b()
+        self.placeRoute(self.player_a, self.connection_a_b)
         score = scoreGame([self.player_a], self.connections, {1: 0}, self.loc_con_map)[
             self.player_a]
         correct_score = 10
@@ -62,8 +73,8 @@ class TestScoring(TestCase):
         assert score == correct_score
 
     def testLongestRouteTwoOptions(self):
-        self.player_a_place_a_b()
-        self.player_a_place_a_c()
+        self.placeRoute(self.player_a, self.connection_a_b)
+        self.placeRoute(self.player_a, self.connection_a_c)
         longest_route = findLongestRoute(self.place_a, [], self.loc_con_map, self.player_a)[0]
         correct_longest_route = 2
         correct = longest_route == correct_longest_route
@@ -74,7 +85,7 @@ class TestScoring(TestCase):
     def testLongestRouteCorrectAllocation(self):
         self.player_b.add_to_hand(Colour.YELLOW)
         self.player_b._tryPlace(self.connection_a_b, Colour.YELLOW)
-        self.player_a_place_a_c()
+        self.placeRoute(self.player_a, self.connection_a_c)
 
         score = scoreGame([self.player_a, self.player_b], self.connections, {1: 0, 2: 0},
                           self.loc_con_map)[self.player_a]
@@ -85,8 +96,8 @@ class TestScoring(TestCase):
         assert score == correct_score
 
     def testLongestCompleteRouteMiddleStart(self):
-        self.player_a_place_a_b()
-        self.player_a_place_a_c()
+        self.placeRoute(self.player_a, self.connection_a_b)
+        self.placeRoute(self.player_a, self.connection_a_c)
         longest_route = findPlayerLongestRoute(self.loc_con_map, self.player_a)
         correct_longest_route = 3
         correct = longest_route == correct_longest_route
@@ -95,17 +106,9 @@ class TestScoring(TestCase):
         assert longest_route == 3
 
     def testLongestRouteSeparateSections(self):
-        place_d = City("d")
-        place_e = City("e")
-        connection_d_e = Connection(place_d, place_e, Colour.ANY, 4, False, 0)
-        self.connections.append(connection_d_e)
-        self.loc_con_map[place_d] = [connection_d_e]
-        self.loc_con_map[place_e] = [connection_d_e]
-        for i in range(4):
-            self.player_a.add_to_hand(Colour.YELLOW)
-        self.player_a.placeTrain(connection_d_e, Colour.YELLOW)
-        self.player_a_place_a_b()
-        self.player_a_place_a_c()
+        self.placeRoute(self.player_a, self.connection_d_e)
+        self.placeRoute(self.player_a, self.connection_a_b)
+        self.placeRoute(self.player_a, self.connection_a_c)
         longest_route = findPlayerLongestRoute(self.loc_con_map, self.player_a)
         correct_longest_route = 4
         correct = longest_route == correct_longest_route
@@ -113,11 +116,19 @@ class TestScoring(TestCase):
             print(longest_route)
         assert longest_route == 4
 
-    def player_a_place_a_b(self):
-        self.player_a.add_to_hand(Colour.YELLOW)
-        self.player_a._tryPlace(self.connection_a_b, Colour.YELLOW)
+    def testLongestRouteStartsOffBranch(self):
+        self.placeRoute(self.player_a, self.connection_a_b)
+        self.placeRoute(self.player_a, self.connection_b_c)
+        self.placeRoute(self.player_a, self.connection_b_d)
+        correct_longest = 6
+        longest = findPlayerLongestRoute(self.loc_con_map, self.player_a)
+        correct = correct_longest == longest
+        if not correct:
+            print(longest)
+        assert correct_longest == longest
 
-    def player_a_place_a_c(self):
-        self.player_a.add_to_hand(Colour.YELLOW)
-        self.player_a.add_to_hand(Colour.YELLOW)
-        self.player_a._tryPlace(self.connection_a_c, Colour.YELLOW)
+    def placeRoute(self, player, connection):
+        length = connection.getLength()
+        for i in range(length):
+            player.add_to_hand(Colour.YELLOW)
+        player.placeTrain(connection, Colour.YELLOW)
