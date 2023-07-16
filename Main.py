@@ -79,22 +79,28 @@ def scoreGame(players, connections, len_score_map: dict, city_connection_map: di
     longest_len = 0
     longest_players = []
     for player in players:
-        if len(player.getLocations()) == 0:
-            continue
-        start_node = list(player.getLocations())[0]  # Ensures start node is an element of the graph
-        length_one, edges = findLongestRoute(start_node, [], city_connection_map, player)
-        length_two, edges_two = findLongestRoute(start_node, edges, city_connection_map, player)
-        total_length = length_one + length_two
+        total_length = findPlayerLongestRoute(city_connection_map, player)
         if total_length > longest_len:
             longest_players = [player]
             longest_len = total_length
         elif total_length == longest_len:
             longest_players.append(player)
 
-    for player in longest_players:
-        score[player] += 10
+    if longest_len > 0:
+        for player in longest_players:
+            score[player] += 10
 
     return score
+
+
+def findPlayerLongestRoute(city_connection_map, player):
+    if len(player.getLocations()) == 0:
+        return 0
+    start_node = list(player.getLocations())[0]  # Ensures start node is an element of the graph
+    length_one, edges = findLongestRoute(start_node, [], city_connection_map, player)
+    length_two, edges_two = findLongestRoute(start_node, edges, city_connection_map, player)
+    total_length = length_one + length_two
+    return total_length
 
 
 def findLongestRoute(node: City, seen_edges: list, city_connection_map: dict,
@@ -112,7 +118,8 @@ def findLongestRoute(node: City, seen_edges: list, city_connection_map: dict,
         edges_used = seen_edges + valid_outward
         ends = list(valid_outward[0].getLocations())
         ends.remove(node)
-        return findLongestRoute(ends[0], edges_used, city_connection_map, player)
+        next_len, next_edges = findLongestRoute(ends[0], edges_used, city_connection_map, player)
+        return next_len + valid_outward[0].getLength(), next_edges+edges_used
 
     else:  # Go through all the options
         longest = -1

@@ -4,7 +4,7 @@ from City import City
 from Colour import Colour
 from Connection import Connection
 from Deck import Deck
-from Main import scoreGame, findLongestRoute
+from Main import scoreGame, findLongestRoute, findPlayerLongestRoute
 from Players.TestPlayer import TestPlayer
 from Route import Route
 
@@ -90,3 +90,16 @@ class TestScoring(TestCase):
         if not correct:
             print(score)
         assert score == correct_score
+
+    def testLongestCompleteRouteMiddleStart(self):
+        self.player_a.add_to_hand(Colour.YELLOW)
+        self.player_a._tryPlace(self.connection_a_b, Colour.YELLOW)
+        self.player_a.add_to_hand(Colour.YELLOW)
+        self.player_a.add_to_hand(Colour.YELLOW)
+        self.player_a._tryPlace(self.connection_a_c, Colour.YELLOW)
+        longest_route = findPlayerLongestRoute(self.loc_con_map, self.player_a)
+        correct_longest_route = 3
+        correct = longest_route == correct_longest_route
+        if not correct:
+            print(longest_route)
+        assert longest_route == 3
