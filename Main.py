@@ -131,7 +131,7 @@ def findLongestRoute(node: City, seen_edges: list, city_connection_map: dict,
     outward_connections = city_connection_map[node]
     valid_outward = []
     for connection in outward_connections:  # Gets just the usable routes
-        if connection not in seen_edges and connection.getController() == player:
+        if not connection.flight_connection and connection not in seen_edges and connection.getController() == player:
             valid_outward.append(connection)
 
     nodes_seen = {node}  # The current node is always seen

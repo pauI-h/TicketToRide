@@ -5,7 +5,7 @@ from Colour import Colour
 class Connection:
 
     def __init__(self, start: City, end: City, colour: Colour, length: int, tunnel: bool,
-                 num_locomotives: int):
+                 num_locomotives: int, flight_connection: bool = False):
         self.__start = start
         self.__end = end
         self.__colour = colour
@@ -13,6 +13,11 @@ class Connection:
         self.__used = None
         self.__tunnel = tunnel
         self.__locomotives = num_locomotives
+        self._flight_connection = flight_connection
+
+    @property
+    def flight_connection(self):
+        return self._flight_connection
 
     def getLocations(self):
         return self.__start, self.__end
