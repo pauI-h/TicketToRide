@@ -74,7 +74,7 @@ def scoreGame(players, connections, len_score_map: dict, city_connection_map: di
     for player in players:  # Counts points from route
         routes = player.getRoutes()
         for route in routes:
-            if route.checkCompleted(connections, player, city_connection_map):
+            if route.checkCompleted(player, city_connection_map):
                 score[player] += route.getValue()
 
     longest_len = 0

@@ -4,6 +4,7 @@ from City import City
 from Colour import Colour
 from Connection import Connection
 from Deck import Deck
+from Flight import Flight
 from Main import scoreGame, findLongestRoute, findPlayerLongestRoute
 from Players.TestPlayer import TestPlayer
 from Route import Route
@@ -140,12 +141,18 @@ class TestScoring(TestCase):
         longest = findPlayerLongestRoute(self.loc_con_map, self.player_a)
         assert longest == correct_longest
 
-    def testRouteCompletedFlightConnection(self):
+    def testRouteCompletedFlightConnectionNoTerminus(self):
         self.placeConnection(self.player_a, self.flight_connection_a_d)
         route = Route(self.place_a, self.place_d, 2)
         self.player_a.addRoute(route)
-        completed = route.checkCompleted(self.connections, self.player_a, self.loc_con_map)
+        completed = route.checkCompleted(self.player_a, self.loc_con_map)
         assert not completed
+
+    def testFlightCompleted(self):
+        flight = Flight(self.place_a, self.place_d)
+        self.placeConnection(self.player_a, self.flight_connection_a_d)
+        completed = flight.checkCompleted(self.player_a, self.loc_con_map)
+        assert completed
 
     def placeConnection(self, player, connection):
         length = connection.getLength()
