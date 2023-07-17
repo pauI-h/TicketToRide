@@ -19,21 +19,27 @@ class TestScoring(TestCase):
         self.place_c = City("c")
         self.place_d = City("d")
         self.place_e = City("e")
+
         self.connection_a_b = Connection(self.place_a, self.place_b, Colour.ANY, 1, False, 0)
         self.connection_a_c = Connection(self.place_a, self.place_c, Colour.ANY, 2, False, 0)
+        self.flight_connection_a_d = Connection(self.place_a, self.place_d, Colour.ANY, 2, False, 0,
+                                                True)
         self.connection_b_c = Connection(self.place_b, self.place_c, Colour.ANY, 2, False, 0)
         self.connection_b_d = Connection(self.place_b, self.place_d, Colour.ANY, 4, False, 0)
         self.connection_d_e = Connection(self.place_d, self.place_e, Colour.ANY, 4, False, 0)
 
-        self.connections = [self.connection_a_b, self.connection_a_c,
+        self.connections = [self.connection_a_b, self.connection_a_c, self.flight_connection_a_d,
                             self.connection_b_c, self.connection_b_d,
                             self.connection_d_e]
-        self.loc_con_map = {self.place_a: [self.connection_a_b, self.connection_a_c],
-                            self.place_b: [self.connection_a_b, self.connection_b_c,
-                                           self.connection_b_d],
-                            self.place_c: [self.connection_a_c, self.connection_b_c],
-                            self.place_d: [self.connection_d_e, self.connection_b_d],
-                            self.place_e: [self.connection_d_e]}
+
+        self.loc_con_map = {
+            self.place_a: [self.connection_a_b, self.connection_a_c, self.flight_connection_a_d],
+            self.place_b: [self.connection_a_b, self.connection_b_c,
+                           self.connection_b_d],
+            self.place_c: [self.connection_a_c, self.connection_b_c],
+            self.place_d: [self.connection_d_e, self.connection_b_d, self.flight_connection_a_d],
+            self.place_e: [self.connection_d_e]
+        }
 
     def testNoPlayerLocations(self):
         # Checks correct score when no trains placed
@@ -129,15 +135,17 @@ class TestScoring(TestCase):
 
     def testLongestRouteFlightConnection(self):
         self.placeConnection(self.player_a, self.connection_a_b)
-        flight_connection = Connection(self.place_a, self.place_d, Colour.ANY, 2, False, 0, True)
-        self.connections.append(flight_connection)
-        self.loc_con_map[self.place_a].append(flight_connection)
-        self.loc_con_map[self.place_d].append(flight_connection)
-        self.placeConnection(self.player_a, flight_connection)
+        self.placeConnection(self.player_a, self.flight_connection_a_d)
         correct_longest = 1
         longest = findPlayerLongestRoute(self.loc_con_map, self.player_a)
         assert longest == correct_longest
 
+    def testRouteCompletedFlightConnection(self):
+        self.placeConnection(self.player_a, self.flight_connection_a_d)
+        route = Route(self.place_a, self.place_d, 2)
+        self.player_a.addRoute(route)
+        completed = route.checkCompleted(self.connections, self.player_a, self.loc_con_map)
+        assert not completed
 
     def placeConnection(self, player, connection):
         length = connection.getLength()

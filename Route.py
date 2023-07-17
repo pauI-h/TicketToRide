@@ -44,7 +44,7 @@ class Route:
             node = nodes_queue.pop()
             connection_list = city_connection_map[node]
             for connection in connection_list:
-                if connection.getController() == player:
+                if connection.getController() == player and not connection.flight_connection:
                     locations = connection.getLocations()
                     for location in locations:
                         if location != node:
