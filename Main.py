@@ -9,6 +9,7 @@ from Players.Player import Player
 
 
 def main(map: str, map_folder: str):
+    # LOAD the map
     file_name = map_folder + "\\" + map + ".txt"
     cities, connections, city_connection_map, routes = loadMap(file_name)
     for city in cities:
@@ -83,10 +84,10 @@ def scoreGame(players, connections, len_score_map: dict, city_connection_map: di
         if total_length > longest_len:
             longest_players = [player]
             longest_len = total_length
-        elif total_length == longest_len:
+        elif total_length == longest_len:  # Multiple players can have longest route
             longest_players.append(player)
 
-    if longest_len > 0:
+    if longest_len > 0:  # No points if no routes have been completed
         for player in longest_players:
             score[player] += 10
 
@@ -98,15 +99,15 @@ def findPlayerLongestRoute(city_connection_map, player):
         return 0
     locations: set = player.getLocations()
     longest_len = -1
-    while len(locations) != 0:
+    while len(locations) != 0:  # Used to ensure all nodes have been visited
         start_node = sorted(list(locations))[0]
         # Ensures start node is an element of the graph, sorted removes randomness from set
         length_one, edges_one, nodes_seen_one, end_one = \
             findLongestRoute(start_node, [], city_connection_map, player)
         length_two, edges_two, nodes_seen_two, end_two = \
             findLongestRoute(start_node, edges_one, city_connection_map, player)
-        total_length = length_one + length_two
 
+        # Checks on the main path
         length_test, edges_test, nodes_seen_test, end_test = \
             findLongestRoute(end_one, [], city_connection_map, player)
         test_start = end_one
@@ -119,9 +120,7 @@ def findPlayerLongestRoute(city_connection_map, player):
 
         if length_test > longest_len:
             longest_len = length_test
-        # print(locations)
-        # print(nodes_seen_one)
-        # print(nodes_seen_two)
+
         locations = locations.difference(nodes_seen_one)
         locations = locations.difference(nodes_seen_two)
     return longest_len
@@ -131,11 +130,11 @@ def findLongestRoute(node: City, seen_edges: list, city_connection_map: dict,
                      player: Player) -> (int, list, set, City):
     outward_connections = city_connection_map[node]
     valid_outward = []
-    for connection in outward_connections:
+    for connection in outward_connections:  # Gets just the usable routes
         if connection not in seen_edges and connection.getController() == player:
             valid_outward.append(connection)
 
-    nodes_seen = {node}
+    nodes_seen = {node}  # The current node is always seen
     if len(valid_outward) == 0:  # No valid continuation from this point
         return 0, [], nodes_seen, node
 
@@ -155,18 +154,23 @@ def findLongestRoute(node: City, seen_edges: list, city_connection_map: dict,
         for connection in valid_outward:
             ends = list(connection.getLocations())
             ends.remove(node)
-            nodes_seen.add(ends[0])
-            edges_used = seen_edges + [connection]
+            nodes_seen.add(ends[0])  # Adds the node being checked to the list of nodes seen
+            edges_used = seen_edges + [connection]  # Tracks the edges used so far
+
             length, new_edges_used, new_nodes_seen, end = \
                 findLongestRoute(ends[0], edges_used, city_connection_map, player)
+
             length += connection.getLength()
+            # Adds the length of the current connection to the follow on connections
             edges_used += new_edges_used
             nodes_seen = nodes_seen.union(new_nodes_seen)
             if length > longest:
+                # Updates with the longest route found
                 longest_edges_used = edges_used
                 longest = length
                 furthest_end = end
             if length == longest and len(longest_edges_used) < len(edges_used):
+                # Uses the longest path with the lowest number of edges
                 longest_edges_used = edges_used
                 longest = length
                 furthest_end = end

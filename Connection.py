@@ -34,28 +34,29 @@ class Connection:
 
     def use(self, hand: dict, colour, deck, player):
         if colour != self.__colour and self.__colour != Colour.ANY:
+            # Checks the right colour is being used
             return False, -1, -1
 
         needed = self.__length
 
-        if self.__tunnel:
+        if self.__tunnel:  # Adds the extra trains demanded by the tunnel
             for i in range(3):
                 new = deck.deal()
                 if new == colour or new == Colour.ANY:
                     needed += 1
 
-        if hand[Colour.ANY] < self.__locomotives:
+        if hand[Colour.ANY] < self.__locomotives:  # Checks enough locomotives
             return False, -2, self.__locomotives
 
         num_normal = hand[colour]
         loco_needed = self.__locomotives
         norm_used = needed
 
-        if num_normal < needed - self.__locomotives:
+        if num_normal < needed - self.__locomotives:  # If not enough normal use extra locomotives
             loco_needed += (needed - self.__locomotives) - num_normal
             norm_used = num_normal
 
-        if hand[Colour.ANY] < loco_needed:
+        if hand[Colour.ANY] < loco_needed:  # If not enough locomotives cannot complete
             return False, needed, self.__locomotives
 
         self.__used = player
