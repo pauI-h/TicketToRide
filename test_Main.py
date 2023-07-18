@@ -5,9 +5,11 @@ from Colour import Colour
 from Connection import Connection
 from Deck import Deck
 from Flight import Flight
-from Main import scoreGame, findLongestRoute, findPlayerLongestRoute
+from LongestRouteFinder import findLongestRoute
+from Main import scoreGame, findPlayerLongestRoute
 from Players.TestPlayer import TestPlayer
 from Route import Route
+from TestUtil import placeConnection
 
 
 class TestScoring(TestCase):
@@ -61,7 +63,7 @@ class TestScoring(TestCase):
         # Check correct score when single route completed
         route = Route(self.place_a, self.place_b, 1)
         self.player_a.addRoute(route)
-        self.placeConnection(self.player_a, self.connection_a_b)
+        placeConnection(self.player_a, self.connection_a_b)
         score = scoreGame([self.player_a], self.connections, {1: 0}, self.loc_con_map)[
             self.player_a]
         correct = score == 11  # 11 as 10 for longest route
@@ -70,7 +72,7 @@ class TestScoring(TestCase):
         assert score == 11
 
     def testLongestRouteSingle(self):
-        self.placeConnection(self.player_a, self.connection_a_b)
+        placeConnection(self.player_a, self.connection_a_b)
         score = scoreGame([self.player_a], self.connections, {1: 0}, self.loc_con_map)[
             self.player_a]
         correct_score = 10
@@ -80,8 +82,8 @@ class TestScoring(TestCase):
         assert score == correct_score
 
     def testLongestRouteTwoOptions(self):
-        self.placeConnection(self.player_a, self.connection_a_b)
-        self.placeConnection(self.player_a, self.connection_a_c)
+        placeConnection(self.player_a, self.connection_a_b)
+        placeConnection(self.player_a, self.connection_a_c)
         longest_route = findLongestRoute(self.place_a, [], self.loc_con_map, self.player_a)[0]
         correct_longest_route = 2
         correct = longest_route == correct_longest_route
@@ -92,7 +94,7 @@ class TestScoring(TestCase):
     def testLongestRouteCorrectAllocation(self):
         self.player_b.add_to_hand(Colour.YELLOW)
         self.player_b._tryPlace(self.connection_a_b, Colour.YELLOW)
-        self.placeConnection(self.player_a, self.connection_a_c)
+        placeConnection(self.player_a, self.connection_a_c)
 
         score = scoreGame([self.player_a, self.player_b], self.connections, {1: 0, 2: 0},
                           self.loc_con_map)[self.player_a]
@@ -103,8 +105,8 @@ class TestScoring(TestCase):
         assert score == correct_score
 
     def testLongestCompleteRouteMiddleStart(self):
-        self.placeConnection(self.player_a, self.connection_a_b)
-        self.placeConnection(self.player_a, self.connection_a_c)
+        placeConnection(self.player_a, self.connection_a_b)
+        placeConnection(self.player_a, self.connection_a_c)
         longest_route = findPlayerLongestRoute(self.loc_con_map, self.player_a)
         correct_longest_route = 3
         correct = longest_route == correct_longest_route
@@ -113,9 +115,9 @@ class TestScoring(TestCase):
         assert longest_route == 3
 
     def testLongestRouteSeparateSections(self):
-        self.placeConnection(self.player_a, self.connection_d_e)
-        self.placeConnection(self.player_a, self.connection_a_b)
-        self.placeConnection(self.player_a, self.connection_a_c)
+        placeConnection(self.player_a, self.connection_d_e)
+        placeConnection(self.player_a, self.connection_a_b)
+        placeConnection(self.player_a, self.connection_a_c)
         longest_route = findPlayerLongestRoute(self.loc_con_map, self.player_a)
         correct_longest_route = 4
         correct = longest_route == correct_longest_route
@@ -124,9 +126,9 @@ class TestScoring(TestCase):
         assert longest_route == 4
 
     def testLongestRouteStartsOffBranch(self):
-        self.placeConnection(self.player_a, self.connection_a_b)
-        self.placeConnection(self.player_a, self.connection_b_c)
-        self.placeConnection(self.player_a, self.connection_b_d)
+        placeConnection(self.player_a, self.connection_a_b)
+        placeConnection(self.player_a, self.connection_b_c)
+        placeConnection(self.player_a, self.connection_b_d)
         correct_longest = 6
         longest = findPlayerLongestRoute(self.loc_con_map, self.player_a)
         correct = correct_longest == longest
@@ -135,14 +137,14 @@ class TestScoring(TestCase):
         assert correct_longest == longest
 
     def testLongestRouteFlightConnection(self):
-        self.placeConnection(self.player_a, self.connection_a_b)
-        self.placeConnection(self.player_a, self.flight_connection_a_d)
+        placeConnection(self.player_a, self.connection_a_b)
+        placeConnection(self.player_a, self.flight_connection_a_d)
         correct_longest = 1
         longest = findPlayerLongestRoute(self.loc_con_map, self.player_a)
         assert longest == correct_longest
 
     def testRouteCompletedFlightConnectionNoTerminus(self):
-        self.placeConnection(self.player_a, self.flight_connection_a_d)
+        placeConnection(self.player_a, self.flight_connection_a_d)
         route = Route(self.place_a, self.place_d, 2)
         self.player_a.addRoute(route)
         completed = route.checkCompleted(self.player_a, self.loc_con_map)
@@ -150,12 +152,8 @@ class TestScoring(TestCase):
 
     def testFlightCompleted(self):
         flight = Flight(self.place_a, self.place_d)
-        self.placeConnection(self.player_a, self.flight_connection_a_d)
+        placeConnection(self.player_a, self.flight_connection_a_d)
         completed = flight.checkCompleted(self.player_a, self.loc_con_map)
         assert completed
 
-    def placeConnection(self, player, connection):
-        length = connection.getLength()
-        for i in range(length):
-            player.add_to_hand(Colour.YELLOW)
-        player.placeTrain(connection, Colour.YELLOW)
+    

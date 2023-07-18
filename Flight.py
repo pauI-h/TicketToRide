@@ -1,4 +1,5 @@
 from City import City
+from LongestRouteFinder import findLongestRoute
 from MultiStepPath import MultiStepPath
 from Players.Player import Player
 
@@ -9,4 +10,14 @@ class Flight(MultiStepPath):
 
     def checkCompleted(self, player: Player, city_connection_map: dict):
         return self.checkCompletedGeneral(player, city_connection_map, True)
+
+    def findLongestCompletedPath(self, player: Player, city_connection_map: dict):
+        """
+        Gets the longest path between the player used to complete the path
+        :param player:
+        :param city_connection_map:
+        :return:
+        """
+
+        return findLongestRoute(self.start, [], city_connection_map, player, self.end, True)[0]
 

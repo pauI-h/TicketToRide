@@ -7,6 +7,14 @@ class MultiStepPath:
         self.__start = start
         self.__end = end
 
+    @property
+    def start(self):
+        return self.__start
+
+    @property
+    def end(self):
+        return self.__end
+
     def checkCompletedGeneral(self, player: Player, city_connection_map: dict,
                               flight_connections: bool) -> bool:
         start_found = False

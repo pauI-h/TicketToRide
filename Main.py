@@ -4,8 +4,8 @@ import sys
 from Auxilary import *
 from Colour import Colour
 from Deck import Deck
+from LongestRouteFinder import findLongestRoute
 from Players.DumbPlayer import DumbPlayer
-from Players.Player import Player
 
 
 def main(map: str, map_folder: str):
@@ -124,58 +124,6 @@ def findPlayerLongestRoute(city_connection_map, player):
         locations = locations.difference(nodes_seen_one)
         locations = locations.difference(nodes_seen_two)
     return longest_len
-
-
-def findLongestRoute(node: City, seen_edges: list, city_connection_map: dict,
-                     player: Player) -> (int, list, set, City):
-    outward_connections = city_connection_map[node]
-    valid_outward = []
-    for connection in outward_connections:  # Gets just the usable routes
-        if not connection.flight_connection and connection not in seen_edges and connection.getController() == player:
-            valid_outward.append(connection)
-
-    nodes_seen = {node}  # The current node is always seen
-    if len(valid_outward) == 0:  # No valid continuation from this point
-        return 0, [], nodes_seen, node
-
-    elif len(valid_outward) == 1:  # Only one option
-        edges_used = seen_edges + valid_outward
-        ends = list(valid_outward[0].getLocations())
-        ends.remove(node)
-        next_len, next_edges, new_nodes, end = findLongestRoute(ends[0], edges_used,
-                                                                city_connection_map, player)
-        nodes_seen = nodes_seen.union(new_nodes)
-        return next_len + valid_outward[0].getLength(), next_edges + edges_used, nodes_seen, end
-
-    else:  # Go through all the options
-        longest = -1
-        longest_edges_used = []
-        furthest_end = None
-        for connection in valid_outward:
-            ends = list(connection.getLocations())
-            ends.remove(node)
-            nodes_seen.add(ends[0])  # Adds the node being checked to the list of nodes seen
-            edges_used = seen_edges + [connection]  # Tracks the edges used so far
-
-            length, new_edges_used, new_nodes_seen, end = \
-                findLongestRoute(ends[0], edges_used, city_connection_map, player)
-
-            length += connection.getLength()
-            # Adds the length of the current connection to the follow on connections
-            edges_used += new_edges_used
-            nodes_seen = nodes_seen.union(new_nodes_seen)
-            if length > longest:
-                # Updates with the longest route found
-                longest_edges_used = edges_used
-                longest = length
-                furthest_end = end
-            if length == longest and len(longest_edges_used) < len(edges_used):
-                # Uses the longest path with the lowest number of edges
-                longest_edges_used = edges_used
-                longest = length
-                furthest_end = end
-
-        return longest, longest_edges_used, nodes_seen, furthest_end
 
 
 def game(players, connections):

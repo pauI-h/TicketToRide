@@ -9,7 +9,7 @@ class Route(MultiStepPath):
         self.__value = value
 
     def getInfo(self):
-        return self.__start, self.__end, self.__value
+        return self.start, self.end, self.__value
 
     def getValue(self):
         return self.__value
