@@ -4,6 +4,7 @@ import sys
 from Auxilary import *
 from Colour import Colour
 from Deck import Deck
+from Flight import Flight
 from LongestRouteFinder import findLongestRoute
 from Players.DumbPlayer import DumbPlayer
 
@@ -62,7 +63,7 @@ def turn(players, connections, stop=sys.maxsize) -> int:  # Max size doesn't pro
     return end_player
 
 
-def scoreGame(players, connections, len_score_map: dict, city_connection_map: dict):
+def scoreGame(players, connections, len_score_map: dict, city_connection_map: dict, flights: list):
     score = {}
     for player in players:
         score[player] = 0
@@ -70,6 +71,17 @@ def scoreGame(players, connections, len_score_map: dict, city_connection_map: di
     for connection in connections:  # Counts the points from trains
         if connection.getController() is not None:
             score[connection.getController()] += len_score_map[connection.getLength()]
+
+    # Add completed flights
+    flight: Flight
+    for flight in flights:
+        for player in players:
+            if flight.checkCompleted(player, city_connection_map):
+                length = flight.findLongestCompletedPath(player, city_connection_map)
+                new_connection = Connection(flight.start, flight.end, Colour.ANY, length, False, 0)
+                new_connection.use({Colour.ANY: length}, Colour.ANY, Deck(1, 1), player)
+                city_connection_map[flight.start].append(new_connection)
+                city_connection_map[flight.end].append(new_connection)
 
     for player in players:  # Counts points from route
         routes = player.getRoutes()
@@ -136,7 +148,7 @@ def game(players, connections):
 
     turn(players, connections, stop)
 
-    scoreGame(players, connections, {}, {})
+    scoreGame(players, connections, {}, {}, [])
 
 
 if __name__ == "__main__":

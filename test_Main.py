@@ -47,16 +47,16 @@ class TestScoring(TestCase):
     def testNoPlayerLocations(self):
         # Checks correct score when no trains placed
         score = scoreGame([self.player_a], self.connections, {1: 0},
-                          self.loc_con_map)
+                          self.loc_con_map, [])
 
         assert score[self.player_a] == 0
 
     def testScoreOneConnection(self):
         # Tests if the score from one connection_a_b is correct
-        self.connection_a_b.use({Colour.YELLOW: 1, Colour.ANY: 0}, Colour.YELLOW, None,
+        self.connection_a_b.use({Colour.YELLOW: 1, Colour.ANY: 0}, Colour.YELLOW, Deck(1,1),
                                 self.player_a)
 
-        score = scoreGame([self.player_a], self.connections, {1: 1}, self.loc_con_map)
+        score = scoreGame([self.player_a], self.connections, {1: 1}, self.loc_con_map, [])
         assert score[self.player_a] == 1
 
     def testRouteSingle(self):
@@ -64,7 +64,7 @@ class TestScoring(TestCase):
         route = Route(self.place_a, self.place_b, 1)
         self.player_a.addRoute(route)
         placeConnection(self.player_a, self.connection_a_b)
-        score = scoreGame([self.player_a], self.connections, {1: 0}, self.loc_con_map)[
+        score = scoreGame([self.player_a], self.connections, {1: 0}, self.loc_con_map, [])[
             self.player_a]
         correct = score == 11  # 11 as 10 for longest route
         if not correct:
@@ -73,7 +73,7 @@ class TestScoring(TestCase):
 
     def testLongestRouteSingle(self):
         placeConnection(self.player_a, self.connection_a_b)
-        score = scoreGame([self.player_a], self.connections, {1: 0}, self.loc_con_map)[
+        score = scoreGame([self.player_a], self.connections, {1: 0}, self.loc_con_map, [])[
             self.player_a]
         correct_score = 10
         correct = score == correct_score  # 11 as 10 for longest route
@@ -97,7 +97,7 @@ class TestScoring(TestCase):
         placeConnection(self.player_a, self.connection_a_c)
 
         score = scoreGame([self.player_a, self.player_b], self.connections, {1: 0, 2: 0},
-                          self.loc_con_map)[self.player_a]
+                          self.loc_con_map, [])[self.player_a]
         correct_score = 10
         correct = score == correct_score  # 11 as 10 for longest route
         if not correct:
@@ -156,4 +156,12 @@ class TestScoring(TestCase):
         completed = flight.checkCompleted(self.player_a, self.loc_con_map)
         assert completed
 
-    
+    def testRouteCompletedViaFlight(self):
+        route = Route(self.place_a, self.place_d, 5)
+        flight = Flight(self.place_a, self.place_d)
+        self.player_a.addRoute(route)
+        placeConnection(self.player_a, self.flight_connection_a_d)
+        scores = scoreGame([self.player_a], self.connections, {1: 0, 2: 0, 5: 0}, self.loc_con_map,
+                           [flight])
+        score = scores[self.player_a]
+        assert score == 15, "Score = " + str(score)

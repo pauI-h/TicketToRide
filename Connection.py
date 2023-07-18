@@ -1,5 +1,7 @@
 from City import City
 from Colour import Colour
+from Deck import Deck
+from Players.Player import Player
 
 
 class Connection:
@@ -37,7 +39,7 @@ class Connection:
     def getLocomotives(self):
         return self.__locomotives
 
-    def use(self, hand: dict, colour, deck, player):
+    def use(self, hand: dict, colour: Colour, deck: Deck, player: Player):
         if colour != self.__colour and self.__colour != Colour.ANY:
             # Checks the right colour is being used
             return False, -1, -1
@@ -76,4 +78,4 @@ class Connection:
             tunnel = "Tunnel "
         return str(self.__start) + "->" + str(self.__end) + ", " + str(self.__colour) + " " + \
                tunnel + str(self.__length) + " Locomotives = " + str(self.__locomotives) + \
-               " State = " + state
+               " State = " + state, "Flight = " + str(self._flight_connection)
