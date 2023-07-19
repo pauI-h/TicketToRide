@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 
-
 from Colour import Colour
 from Deck import Deck
 
@@ -32,6 +31,9 @@ class Player(ABC):
         return self.__locations.copy()  # Copy stops editing using pass by reference
 
     def _tryPlace(self, connection, colour):
+        if connection.getLength() > self.__trains:
+            return
+
         result, norm_used, loco_used = connection.use(self.__hand, colour, self.__deck, self)
         if result:
             self.__hand[colour] -= norm_used
@@ -39,6 +41,7 @@ class Player(ABC):
             # Updates the locations connected by the player
             self.__locations.add(connection.getLocations()[0])
             self.__locations.add(connection.getLocations()[1])
+            self.__trains -= connection.getLength()
 
     @abstractmethod
     def drawCardTurn(self, map_rep) -> int:

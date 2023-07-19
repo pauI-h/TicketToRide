@@ -15,8 +15,8 @@ from TestUtil import placeConnection
 class TestScoring(TestCase):
 
     def setUp(self):
-        self.player_a = TestPlayer(0, Deck(1, 1))
-        self.player_b = TestPlayer(0, Deck(1, 1))
+        self.player_a = TestPlayer(100, Deck(1, 1))
+        self.player_b = TestPlayer(100, Deck(1, 1))
         self.place_a = City("a")
         self.place_b = City("b")
         self.place_c = City("c")

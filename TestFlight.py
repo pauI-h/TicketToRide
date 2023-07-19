@@ -29,7 +29,7 @@ class TestFlight(TestCase):
             end: [connection_start_end, connection_mid_end, connection_too_far],
             too_far: [connection_too_far]
         }
-        player = TestPlayer(0, Deck(1, 1))
+        player = TestPlayer(100, Deck(1, 1))
         flight = Flight(start, end)
 
         placeConnection(player, connection_useless)
