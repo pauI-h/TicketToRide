@@ -6,11 +6,12 @@ from Deck import Deck
 
 class Player(ABC):
 
-    def __init__(self, trains: int, deck: Deck):
+    def __init__(self, trains: int, flight_trains: int, deck: Deck):
         self.__controlled_routes = []
         self.__hand = {}
         self._routes = []
         self.__trains = trains
+        self.__flight_trains = flight_trains
         self.__deck = deck
         self.__colour_pos_map = deck.getColourPosMap()
         self.__locations = set()
@@ -31,7 +32,9 @@ class Player(ABC):
         return self.__locations.copy()  # Copy stops editing using pass by reference
 
     def _tryPlace(self, connection, colour):
-        if connection.getLength() > self.__trains:
+        if not connection.flight_connection and connection.getLength() > self.__trains:
+            return
+        elif connection.flight_connection and connection.getLength > self.__flight_trains:
             return
 
         result, norm_used, loco_used = connection.use(self.__hand, colour, self.__deck, self)
@@ -41,7 +44,10 @@ class Player(ABC):
             # Updates the locations connected by the player
             self.__locations.add(connection.getLocations()[0])
             self.__locations.add(connection.getLocations()[1])
-            self.__trains -= connection.getLength()
+            if connection.flight_connection:
+                self.__flight_trains -= connection.getLength()
+            else:
+                self.__trains -= connection.getLength()
 
     @abstractmethod
     def drawCardTurn(self, map_rep) -> int:
