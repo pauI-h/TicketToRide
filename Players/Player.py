@@ -34,7 +34,7 @@ class Player(ABC):
     def _tryPlace(self, connection, colour):
         if not connection.flight_connection and connection.getLength() > self.__trains:
             return
-        elif connection.flight_connection and connection.getLength > self.__flight_trains:
+        elif connection.flight_connection and connection.getLength() > self.__flight_trains:
             return
 
         result, norm_used, loco_used = connection.use(self.__hand, colour, self.__deck, self)

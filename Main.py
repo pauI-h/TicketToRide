@@ -9,7 +9,7 @@ from LongestRouteFinder import findLongestRoute
 from Players.DumbPlayer import DumbPlayer
 
 
-def main(map: str, map_folder: str):
+def _main(map: str, map_folder: str):
     # LOAD the map
     file_name = map_folder + "\\" + map + ".txt"
     cities, connections, city_connection_map, routes = loadMap(file_name)
@@ -30,7 +30,7 @@ def main(map: str, map_folder: str):
     deck.re_add_discarded()
     print(deck)
 
-    players = [DumbPlayer(20, deck)]
+    players = [DumbPlayer(20, 6, deck)]
     setupMatch(deck, players, 3)
 
     am_cons = city_connection_map[cities[0]]
@@ -53,17 +53,17 @@ def main(map: str, map_folder: str):
     print()
 
 
-def turn(players, connections, stop=sys.maxsize) -> int:  # Max size doesn't produce type warnings
+def _turn(players, connections, stop=sys.maxsize) -> int:  # Max size doesn't produce type warnings
     end_player = math.inf
     for i in range(max(len(players), stop)):
         player = players[i]
-        player.turn(connections)
+        player._turn(connections)
         if player.trains < 3:
             end_player = i
     return end_player
 
 
-def scoreGame(players, connections, len_score_map: dict, city_connection_map: dict, flights: list):
+def _scoreGame(players, connections, len_score_map: dict, city_connection_map: dict, flights: list):
     score = {}
     for player in players:
         score[player] = 0
@@ -92,7 +92,7 @@ def scoreGame(players, connections, len_score_map: dict, city_connection_map: di
     longest_len = 0
     longest_players = []
     for player in players:
-        total_length = findPlayerLongestRoute(city_connection_map, player)
+        total_length = _findPlayerLongestRoute(city_connection_map, player)
         if total_length > longest_len:
             longest_players = [player]
             longest_len = total_length
@@ -106,7 +106,7 @@ def scoreGame(players, connections, len_score_map: dict, city_connection_map: di
     return score
 
 
-def findPlayerLongestRoute(city_connection_map, player):
+def _findPlayerLongestRoute(city_connection_map, player):
     if len(player.getLocations()) == 0:
         return 0
     locations: set = player.getLocations()
@@ -119,7 +119,7 @@ def findPlayerLongestRoute(city_connection_map, player):
         length_two, edges_two, nodes_seen_two, end_two = \
             findLongestRoute(start_node, edges_one, city_connection_map, player)
 
-        # Checks on the main path
+        # Checks on the _main path
         length_test, edges_test, nodes_seen_test, end_test = \
             findLongestRoute(end_one, [], city_connection_map, player)
         test_start = end_one
@@ -142,14 +142,14 @@ def game(players, connections):
     stop = math.inf
     finished = False
     while not finished:
-        stop = turn(players, connections)
+        stop = _turn(players, connections)
         if stop != math.inf:
             finished = True
 
-    turn(players, connections, stop)
+    _turn(players, connections, stop)
 
-    scoreGame(players, connections, {}, {}, [])
+    _scoreGame(players, connections, {}, {}, [])
 
 
 if __name__ == "__main__":
-    main("Europe", "Maps")
+    _main("Europe", "Maps")
