@@ -10,6 +10,10 @@ from TestUtil import placeConnection
 
 
 class TestFlight(TestCase):
+
+    def setUp(self) -> None:
+        self.player = TestPlayer(100, 100, Deck(1, 1))
+
     def testFindLongestCompletedPath(self):
         start = City("start")
         useless = City("useless")
@@ -29,15 +33,28 @@ class TestFlight(TestCase):
             end: [connection_start_end, connection_mid_end, connection_too_far],
             too_far: [connection_too_far]
         }
-        player = TestPlayer(100, 100, Deck(1, 1))
         flight = Flight(start, end)
 
-        placeConnection(player, connection_useless)
-        placeConnection(player, connection_start_end)
-        placeConnection(player, connection_start_mid)
-        placeConnection(player, connection_mid_end)
-        placeConnection(player, connection_too_far)
+        placeConnection(self.player, connection_useless)
+        placeConnection(self.player, connection_start_end)
+        placeConnection(self.player, connection_start_mid)
+        placeConnection(self.player, connection_mid_end)
+        placeConnection(self.player, connection_too_far)
 
-        assert flight.checkCompleted(player, connection_loc_map)
-        length = flight.findLongestCompletedPath(player, connection_loc_map)
+        assert flight.checkCompleted(self.player, connection_loc_map)
+        length = flight.findLongestCompletedPath(self.player, connection_loc_map)
         assert length == 2, "Length = " + str(length)
+
+    def testFlightCompleted(self):
+        place_a = City("a")
+        place_b = City("b")
+        flight_connection_a_b = Connection(place_a, place_b, Colour.ANY, 2, False, 0, True)
+
+        loc_con_map = {
+            place_a: [flight_connection_a_b],
+            place_b: [flight_connection_a_b]
+        }
+        flight = Flight(place_a, place_b)
+        placeConnection(self.player, flight_connection_a_b)
+        completed = flight.checkCompleted(self.player, loc_con_map)
+        assert completed

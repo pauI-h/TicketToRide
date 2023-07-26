@@ -150,11 +150,6 @@ class TestScoring(TestCase):
         completed = route.checkCompleted(self.player_a, self.loc_con_map)
         assert not completed
 
-    def testFlightCompleted(self):
-        flight = Flight(self.place_a, self.place_d)
-        placeConnection(self.player_a, self.flight_connection_a_d)
-        completed = flight.checkCompleted(self.player_a, self.loc_con_map)
-        assert completed
 
     def testRouteCompletedViaFlight(self):
         route = Route(self.place_a, self.place_d, 5)
