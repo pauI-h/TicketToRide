@@ -64,6 +64,8 @@ def _turn(players, connections, stop=sys.maxsize) -> int:  # Max size doesn't pr
 
 
 def _scoreGame(players, connections, len_score_map: dict, city_connection_map: dict, flights: list):
+    # TODO Add most routes
+    # TODO Add ability for players to check their current score ignoring longest route
     score = {}
     for player in players:
         score[player] = 0
@@ -84,7 +86,7 @@ def _scoreGame(players, connections, len_score_map: dict, city_connection_map: d
                 city_connection_map[flight.end].append(new_connection)
 
     for player in players:  # Counts points from route
-        routes = player.getRoutes()
+        routes = player.routes
         for route in routes:
             if route.checkCompleted(player, city_connection_map):
                 score[player] += route.getValue()

@@ -64,4 +64,4 @@ def loadMap(file_name: str):
 def setupMatch(deck: Deck, players, num_starting_cards: int = 3):
     for player in players:
         for i in range(num_starting_cards):
-            player.add_to_hand(deck.deal())
+            player.addToHand(deck.deal())

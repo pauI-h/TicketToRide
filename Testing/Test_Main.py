@@ -53,7 +53,7 @@ class TestScoring(TestCase):
 
     def testScoreOneConnection(self):
         # Tests if the score from one connection_a_b is correct
-        self.connection_a_b.use({Colour.YELLOW: 1, Colour.ANY: 0}, Colour.YELLOW, Deck(1,1),
+        self.connection_a_b.use({Colour.YELLOW: 1, Colour.ANY: 0}, Colour.YELLOW, Deck(1, 1),
                                 self.player_a)
 
         score = _scoreGame([self.player_a], self.connections, {1: 1}, self.loc_con_map, [])
@@ -92,7 +92,7 @@ class TestScoring(TestCase):
         assert longest_route == 2
 
     def testLongestRouteCorrectAllocation(self):
-        self.player_b.add_to_hand(Colour.YELLOW)
+        self.player_b.addToHand(Colour.YELLOW)
         self.player_b._tryPlace(self.connection_a_b, Colour.YELLOW)
         placeConnection(self.player_a, self.connection_a_c)
 
@@ -149,7 +149,6 @@ class TestScoring(TestCase):
         self.player_a.addRoute(route)
         completed = route.checkCompleted(self.player_a, self.loc_con_map)
         assert not completed
-
 
     def testRouteCompletedViaFlight(self):
         route = Route(self.place_a, self.place_d, 5)

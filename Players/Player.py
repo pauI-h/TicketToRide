@@ -22,11 +22,12 @@ class Player(ABC):
     def routes(self):
         return self._routes
 
-    def add_to_hand(self, colour):
-        self.__hand[colour] += 1
+    @property
+    def hand(self):
+        return self.__hand
 
-    def getRoutes(self):
-        return self._routes
+    def addToHand(self, colour):
+        self.__hand[colour] += 1
 
     def getLocations(self):
         return self.__locations.copy()  # Copy stops editing using pass by reference
