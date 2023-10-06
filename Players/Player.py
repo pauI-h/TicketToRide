@@ -2,7 +2,8 @@ from abc import ABC, abstractmethod
 
 from Colour import Colour
 from Deck import Deck
-from Exceptions import NotEnoughCardsException
+from Exceptions import NotEnoughCardsException, WrongColourException, NotEnoughLocomotivesException, \
+    NotEnoughPiecesException
 
 
 class Player(ABC):
@@ -42,9 +43,9 @@ class Player(ABC):
         :return:
         """
         if not connection.flight_connection and connection.getLength() > self.__trains:
-            return Exception("Not enough trains")
+            return NotEnoughPiecesException("Trains")
         elif connection.flight_connection and connection.getLength() > self.__flight_trains:
-            return Exception("Not enough flight pieces")
+            return NotEnoughPiecesException("Flight")
 
         result, norm_used, loco_used = connection.use(self.__hand, colour, self.__deck, self)
 
@@ -63,9 +64,9 @@ class Player(ABC):
 
         else:
             if (norm_used, loco_used) == (-1, -1):
-                return Exception("Wrong Colour Used")
-            elif norm_used == -1:
-                return Exception("Not Enough Locomotives")
+                return WrongColourException("Wrong Colour Used")
+            elif norm_used == -2:
+                return NotEnoughLocomotivesException("Not Enough Locomotives")
             else:
                 return NotEnoughCardsException("Not enough cards")
 

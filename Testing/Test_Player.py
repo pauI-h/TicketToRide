@@ -4,7 +4,8 @@ from City import City
 from Colour import Colour
 from Connection import Connection
 from Deck import Deck
-from Exceptions import NotEnoughCardsException
+from Exceptions import NotEnoughCardsException, WrongColourException, NotEnoughLocomotivesException, \
+    NotEnoughPiecesException
 from Players.TestPlayer import TestPlayer
 from Route import Route
 from Testing._Util import placeConnection
@@ -17,8 +18,20 @@ class Test_Player(TestCase):
 
         self.place_a = City("a")
         self.place_b = City("b")
+        self.place_c = City("c")
 
-        self.connection_a_b = Connection(self.place_a, self.place_b, Colour.YELLOW, 1, False, 0, False)
+        self.connection_a_b = \
+            Connection(self.place_a, self.place_b, Colour.YELLOW, 1, False, 0, False)
+        self.connection_a_b_loco = \
+            Connection(self.place_a, self.place_b, Colour.YELLOW, 1, False, 1, False)
+        self.long_connection = Connection(self.place_a, self.place_b, Colour.YELLOW, 100, False, 0,
+                                          False)
+
+        self.connection_a_b_flight = \
+            Connection(self.place_a, self.place_b, Colour.YELLOW, 1, False, 0, True)
+        self.long_connection_flight = Connection(self.place_a, self.place_b, Colour.YELLOW, 100,
+                                                 False, 0, True)
+
         self.route_a_b = Route(self.place_a, self.place_b, 1)
 
     def testAddToHand(self):
@@ -44,4 +57,24 @@ class Test_Player(TestCase):
         resp = self.player.placeTrain(self.connection_a_b, Colour.YELLOW)
         assert type(resp) == NotEnoughCardsException
 
+    def testPlaceConnectionWrongColour(self):
+        resp = self.player.placeTrain(self.connection_a_b, Colour.RED)
+        assert type(resp) == WrongColourException
 
+    def testPlaceConnectionNoLocomotives(self):
+        resp = self.player.placeTrain(self.connection_a_b_loco, Colour.YELLOW)
+        assert type(resp) == NotEnoughLocomotivesException, type(resp)
+
+    def testPlaceConnectionNotEnoughTrains(self):
+        placeConnection(self.player, self.long_connection)
+        self.player.addToHand(Colour.YELLOW)
+        resp = self.player.placeTrain(self.connection_a_b, Colour.YELLOW)
+        assert type(resp) == NotEnoughPiecesException, type(resp)
+        assert resp.type == "Trains"
+
+    def testPlaceConnectionNotEnoughFlights(self):
+        placeConnection(self.player, self.long_connection_flight)
+        self.player.addToHand(Colour.YELLOW)
+        resp = self.player.placeTrain(self.connection_a_b_flight, Colour.YELLOW)
+        assert type(resp) == NotEnoughPiecesException, type(resp)
+        assert resp.type == "Flight", resp.type
