@@ -20,11 +20,11 @@ class Player(ABC):
 
     @property
     def routes(self):
-        return self._routes
+        return self._routes.copy()  # Copy stops pass by reference edits
 
     @property
     def hand(self):
-        return self.__hand
+        return self.__hand.copy()  # Copy stops pass by reference edits
 
     def addToHand(self, colour):
         self.__hand[colour] += 1
