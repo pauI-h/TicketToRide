@@ -6,7 +6,7 @@ from Connection import Connection
 from Deck import Deck
 from Flight import Flight
 from Players.TestPlayer import TestPlayer
-from TestUtil import placeConnection
+from _Util import placeConnection
 
 
 class TestFlight(TestCase):

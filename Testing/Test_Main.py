@@ -9,7 +9,7 @@ from LongestRouteFinder import findLongestRoute
 from Main import _scoreGame, _findPlayerLongestRoute
 from Players.TestPlayer import TestPlayer
 from Route import Route
-from TestUtil import placeConnection
+from _Util import placeConnection
 
 
 class TestScoring(TestCase):
