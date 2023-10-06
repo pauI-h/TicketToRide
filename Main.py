@@ -109,9 +109,9 @@ def _scoreGame(players, connections, len_score_map: dict, city_connection_map: d
 
 
 def _findPlayerLongestRoute(city_connection_map, player):
-    if len(player.getLocations()) == 0:
+    if len(player.locations) == 0:
         return 0
-    locations: set = player.getLocations()
+    locations: set = player.locations
     longest_len = -1
     while len(locations) != 0:  # Used to ensure all nodes have been visited
         start_node = sorted(list(locations))[0]

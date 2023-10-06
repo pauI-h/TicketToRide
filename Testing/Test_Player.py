@@ -16,7 +16,6 @@ class Test_Player(TestCase):
         self.place_b = City("b")
         self.route_a_b = Route(self.place_a, self.place_b, 1)
 
-
     def testAddToHand(self):
         self.player.addToHand(Colour.RED)
         hand = self.player.hand
@@ -28,3 +27,6 @@ class Test_Player(TestCase):
     def testAddingRoute(self):
         self.player.addRoute(self.route_a_b)
         assert len(self.player.routes) == 1
+
+    def testLocationsStartsEmpty(self):
+        assert len(self.player.locations) == 0

@@ -26,11 +26,12 @@ class Player(ABC):
     def hand(self):
         return self.__hand.copy()  # Copy stops pass by reference edits
 
+    @property
+    def locations(self):
+        return self.__locations.copy()  # Copy stops editing using pass by reference
+
     def addToHand(self, colour):
         self.__hand[colour] += 1
-
-    def getLocations(self):
-        return self.__locations.copy()  # Copy stops editing using pass by reference
 
     def _tryPlace(self, connection, colour):
         if not connection.flight_connection and connection.getLength() > self.__trains:
