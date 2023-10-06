@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from Colour import Colour
 from Deck import Deck
 from Exceptions import NotEnoughCardsException, WrongColourException, NotEnoughLocomotivesException, \
-    NotEnoughPiecesException
+    NotEnoughPiecesException, ParallelConnectionException
 
 
 class Player(ABC):
@@ -17,6 +17,7 @@ class Player(ABC):
         self.__deck = deck
         self.__colour_pos_map = deck.getColourPosMap()
         self.__locations = set()
+        self.__location_pairs = []
         for colour in Colour:
             self.__hand[colour] = 0
 
@@ -38,14 +39,17 @@ class Player(ABC):
     def _tryPlace(self, connection, colour) -> Exception:
         """
         Attempts to place a route and if successful removes the resources required
-        :param connection:
-        :param colour:
-        :return:
+        :param connection: The connection to try and place
+        :param colour: The colour of card to use
+        :return: An exception describing the issue if unable to complete, else none
         """
         if not connection.flight_connection and connection.getLength() > self.__trains:
             return NotEnoughPiecesException("Trains")
         elif connection.flight_connection and connection.getLength() > self.__flight_trains:
             return NotEnoughPiecesException("Flight")
+
+        if (connection.getLocations()) in self.__location_pairs:
+            return ParallelConnectionException("Already control parallel route")
 
         result, norm_used, loco_used = connection.use(self.__hand, colour, self.__deck, self)
 
@@ -59,6 +63,8 @@ class Player(ABC):
                 self.__flight_trains -= connection.getLength()
             else:
                 self.__trains -= connection.getLength()
+
+            self.__location_pairs.append((connection.getLocations()))
 
             return None
 

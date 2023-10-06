@@ -5,7 +5,7 @@ from Colour import Colour
 from Connection import Connection
 from Deck import Deck
 from Exceptions import NotEnoughCardsException, WrongColourException, NotEnoughLocomotivesException, \
-    NotEnoughPiecesException
+    NotEnoughPiecesException, ParallelConnectionException
 from Players.TestPlayer import TestPlayer
 from Route import Route
 from Testing._Util import placeConnection
@@ -21,6 +21,8 @@ class Test_Player(TestCase):
         self.place_c = City("c")
 
         self.connection_a_b = \
+            Connection(self.place_a, self.place_b, Colour.YELLOW, 1, False, 0, False)
+        self.connection_a_b_second = \
             Connection(self.place_a, self.place_b, Colour.YELLOW, 1, False, 0, False)
         self.connection_a_b_loco = \
             Connection(self.place_a, self.place_b, Colour.YELLOW, 1, False, 1, False)
@@ -78,3 +80,10 @@ class Test_Player(TestCase):
         resp = self.player.placeTrain(self.connection_a_b_flight, Colour.YELLOW)
         assert type(resp) == NotEnoughPiecesException, type(resp)
         assert resp.type == "Flight", resp.type
+
+    def testPlaceConnectionParallelRoute(self):
+        placeConnection(self.player, self.connection_a_b)
+        self.player.addToHand(Colour.YELLOW)
+        resp = self.player.placeTrain(self.connection_a_b_second, Colour.YELLOW)
+        assert type(resp) == ParallelConnectionException, type(resp)
+
