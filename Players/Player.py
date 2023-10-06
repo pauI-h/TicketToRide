@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 
 from Colour import Colour
 from Deck import Deck
+from Exceptions import NotEnoughCardsException
 
 
 class Player(ABC):
@@ -33,13 +34,20 @@ class Player(ABC):
     def addToHand(self, colour):
         self.__hand[colour] += 1
 
-    def _tryPlace(self, connection, colour):
+    def _tryPlace(self, connection, colour) -> Exception:
+        """
+        Attempts to place a route and if successful removes the resources required
+        :param connection:
+        :param colour:
+        :return:
+        """
         if not connection.flight_connection and connection.getLength() > self.__trains:
-            return
+            return Exception("Not enough trains")
         elif connection.flight_connection and connection.getLength() > self.__flight_trains:
-            return
+            return Exception("Not enough flight pieces")
 
         result, norm_used, loco_used = connection.use(self.__hand, colour, self.__deck, self)
+
         if result:
             self.__hand[colour] -= norm_used
             self.__hand[Colour.ANY] -= loco_used
@@ -50,6 +58,16 @@ class Player(ABC):
                 self.__flight_trains -= connection.getLength()
             else:
                 self.__trains -= connection.getLength()
+
+            return None
+
+        else:
+            if (norm_used, loco_used) == (-1, -1):
+                return Exception("Wrong Colour Used")
+            elif norm_used == -1:
+                return Exception("Not Enough Locomotives")
+            else:
+                return NotEnoughCardsException("Not enough cards")
 
     @abstractmethod
     def drawCardTurn(self, map_rep) -> int:
