@@ -15,7 +15,6 @@ class Player(ABC):
         self.__trains = trains
         self.__flight_trains = flight_trains
         self.__deck = deck
-        self.__colour_pos_map = deck.getColourPosMap()
         self.__locations = set()
         self.__location_pairs = []
         for colour in Colour:

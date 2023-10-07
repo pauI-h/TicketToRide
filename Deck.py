@@ -8,33 +8,31 @@ class Deck:
     def __init__(self, norm_count, locomotive_count):
         self.__current = []
         self.__board = []
-        self.__colour_pos_map = {}
-        self.__pos_colour_map = {}
         self.__num_loco = 0
-        self.__discarded = []
-        i = 0
+        self.__discarded = {}
+        self.__counts = {}
+        self.__current_size = 0
 
         for colour in Colour:
-            self.__colour_pos_map[colour] = i
-            self.__pos_colour_map[i] = colour
-            self.__discarded.append(0)
             if colour != Colour.ANY:
-                self.__current.append(norm_count)
+                self.__counts[colour] = norm_count
+                self.__current_size += norm_count
             else:
-                self.__current.append(locomotive_count)
-            i += 1
+                self.__counts[colour] = locomotive_count
+                self.__current_size += locomotive_count
 
-        self.__current_size = sum(self.__current)
-        self.update_board()
+        self.updateBoard()
 
-    def getColourPosMap(self):
-        return self.__colour_pos_map
+    @property
+    def size(self):
+        return self.__current_size
 
     def showBoard(self):
         return self.__board[:]
 
-    def update_board(self):
+    def updateBoard(self):
         num_needed = 5 - len(self.__board)
+
         for i in range(num_needed):
             new = self.deal()
             if new == Colour.ANY:
@@ -43,30 +41,36 @@ class Deck:
             if self.__num_loco >= 3:
                 self.__board = []
                 self.__num_loco = 0
-                self.update_board()
+                self.updateBoard()
             else:
                 self.__board.append(new)
 
     def getFromBoard(self, colour):
         self.__board.remove(colour)
-        self.update_board()
+        self.updateBoard()
 
     def deal(self):
         num = random.randint(0, self.__current_size)
         total = 0
+
         for colour in Colour:
-            total += self.__current[self.__colour_pos_map[colour]]
+            total += self.__counts[colour]
             if total > num:
+                self.__counts[colour] -= 1
+                self.__current_size -= 1
                 break
-        self.__current[self.__colour_pos_map[colour]] -= 1
-        self.__current_size -= 1
+
+        if self.__current_size == 0:
+            self.__reAddDiscarded()
+
         return colour
 
-    def discard(self, colour):
-        self.__discarded[self.__colour_pos_map[colour]] += 1
+    def discard(self, colour, number):
+        self.__discarded[colour] += number
 
-    def re_add_discarded(self):
+    def __reAddDiscarded(self):
         for i in range(len(self.__discarded)):
+            self.__current_size += self.__discarded[i]
             self.__current[i] += self.__discarded[i]
             self.__discarded[i] = 0
 
@@ -75,7 +79,7 @@ class Deck:
         for colour in Colour:
             out += str(colour)
             out += ": "
-            out += str(self.__current[self.__colour_pos_map[colour]])
+            out += str(self.__counts[colour])
             out += ", "
         out = out.strip(", ")
         out += ". Board = "

@@ -27,8 +27,6 @@ def _main(map: str, map_folder: str):
     deck.getFromBoard(col)
     deck.discard(col)
     print(deck)
-    deck.re_add_discarded()
-    print(deck)
 
     players = [DumbPlayer(20, 6, deck)]
     setupMatch(deck, players, 3)
