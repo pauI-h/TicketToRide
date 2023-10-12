@@ -20,6 +20,7 @@ class Deck:
             else:
                 self.__counts[colour] = locomotive_count
                 self.__current_size += locomotive_count
+            self.__discarded[colour] = 0
 
         self.updateBoard()
 
@@ -56,7 +57,7 @@ class Deck:
 
         for colour in Colour:
             total += self.__counts[colour]
-            if total > num:
+            if total >= num:
                 self.__counts[colour] -= 1
                 self.__current_size -= 1
                 break
@@ -70,10 +71,11 @@ class Deck:
         self.__discarded[colour] += number
 
     def __reAddDiscarded(self):
-        for i in range(len(self.__discarded)):
-            self.__current_size += self.__discarded[i]
-            self.__current[i] += self.__discarded[i]
-            self.__discarded[i] = 0
+        for colour in Colour:
+            count = self.__discarded[colour]
+            self.__counts[colour] += count
+            self.__current_size += count
+            self.__discarded[colour] = 0
 
     def __str__(self):
         out = ""

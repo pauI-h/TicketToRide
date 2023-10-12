@@ -1,4 +1,4 @@
-from unittest import TestCase
+from unittest import TestCase, mock
 from unittest.mock import MagicMock
 
 from Colour import Colour
@@ -45,4 +45,17 @@ class Test_Deck(TestCase):
             board = deck.board
             size -= 1
 
-        assert board == [Colour.YELLOW]*5
+        assert board == [Colour.YELLOW] * 5
+
+    @mock.patch.object(Deck, "_Deck__reAddDiscarded")
+    def testReAddDiscardedCards(self, reAddDiscarded_mock: MagicMock):
+        deck = Deck(1, 1)
+
+        count = 0
+        while deck.size > 1:
+            deck.discard(deck.deal(), 1)
+            count += 1
+
+        deck.deal()
+
+        reAddDiscarded_mock.assert_called()
