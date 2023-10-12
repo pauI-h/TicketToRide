@@ -27,7 +27,8 @@ class Deck:
     def size(self):
         return self.__current_size
 
-    def showBoard(self):
+    @property
+    def board(self):
         return self.__board[:]
 
     def updateBoard(self):

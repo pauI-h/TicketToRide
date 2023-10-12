@@ -23,9 +23,9 @@ def _main(map: str, map_folder: str):
     print(deck)
     print(deck.deal())
     print(deck)
-    col = deck.showBoard()[0]
+    col = deck.board()[0]
     deck.getFromBoard(col)
-    deck.discard(col)
+    deck.discard(col, 1)
     print(deck)
 
     players = [DumbPlayer(20, 6, deck)]
