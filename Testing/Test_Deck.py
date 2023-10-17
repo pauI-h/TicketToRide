@@ -10,8 +10,11 @@ class Test_Deck(TestCase):
     def setUp(self) -> None:
         self.deck = Deck(100, 100)
 
-    def testInitialSize(self):
-        assert self.deck.size == 895, self.deck.size
+    @mock.patch.object(Deck, "updateBoard")
+    def testInitialSize(self, updateBoardMock: MagicMock):
+        # Uses mock to prevent board assignment affecting size
+        deck = Deck(100, 100)
+        assert deck.size == 900, deck.size
 
     def testBoardSize(self):
         assert len(self.deck.board) == 5
