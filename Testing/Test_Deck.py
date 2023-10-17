@@ -62,3 +62,31 @@ class Test_Deck(TestCase):
         deck.deal()
 
         reAddDiscarded_mock.assert_called()
+
+    @mock.patch.object(Deck, "discard")
+    def testDiscardCardsWhenClearBoard(self, discardMock: MagicMock):
+
+        deck = Deck(10, 30)
+        deck.deal = MagicMock(return_value=Colour.ANY)
+        board = deck.board
+        while board.count(Colour.ANY) < 2:
+            deck.getFromBoard(board[0])
+            board = deck.board
+        size = deck.size
+        deck.count = 0
+
+        def countDeal():
+            deck.count += 1
+            if deck.count == 1:
+                return Colour.ANY
+            else:
+                return Colour.YELLOW
+
+        deck.deal = countDeal
+
+        while board.count(Colour.ANY) == 2:
+            deck.getFromBoard(board[0])
+            board = deck.board
+            size -= 1
+
+        discardMock.assert_called()

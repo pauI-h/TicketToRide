@@ -52,13 +52,16 @@ class Deck:
             if new == Colour.ANY:  # Tracks number of locos in board
                 self.__num_loco += 1
 
+            self.__board.append(new)
+
             if self.__num_loco >= 3:
-                self.__board = []  # TODO Replace with discard
+                for card in self.__board:
+                    self.discard(card, 1)
+                self.__board = []
                 self.__num_loco = 0
                 self.updateBoard()
                 break  # Stops double growing the board
-            else:
-                self.__board.append(new)
+
 
     def getFromBoard(self, colour) -> None:
         """
