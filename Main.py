@@ -53,7 +53,7 @@ def _main(map: str, map_folder: str):
 
 def _turn(players, connections, stop=sys.maxsize) -> int:  # Max size doesn't produce type warnings
     end_player = math.inf
-    for i in range(min(len(players), stop)):
+    for i in range(min(len(players), stop+1)):
         player = players[i]
         player.turn(connections)
         if player.trains < 3:

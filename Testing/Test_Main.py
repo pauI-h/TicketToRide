@@ -1,5 +1,6 @@
 import math
-from unittest import TestCase
+from unittest import TestCase, mock
+from unittest.mock import MagicMock
 
 from City import City
 from Colour import Colour
@@ -8,6 +9,7 @@ from Deck import Deck
 from Flight import Flight
 from LongestRouteFinder import findLongestRoute
 from Main import _scoreGame, _findPlayerLongestRoute, _turn
+from Players.Player import Player
 from Players.TestPlayer import TestPlayer
 from Route import Route
 from _Util import placeConnection
@@ -176,3 +178,11 @@ class TestScoring(TestCase):
         players = [self.player_a, self.player_two_trains]
         end_player = _turn(players, self.connections)
         assert end_player == 1
+
+    @mock.patch.object(Player, "turn")
+    def testTurnStoppingEarly(self, turnMock: MagicMock):
+        players = [self.player_a, self.player_b]
+        end = 0
+        _turn(players, self.connections, end)
+
+        turnMock.assert_called_once()
