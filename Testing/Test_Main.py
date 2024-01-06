@@ -171,3 +171,8 @@ class TestScoring(TestCase):
         players = [self.player_two_trains, self.player_b]
         end_player = _turn(players, self.connections)
         assert end_player == 0
+
+    def testTurnDetectEndPlayerTwo(self):
+        players = [self.player_a, self.player_two_trains]
+        end_player = _turn(players, self.connections)
+        assert end_player == 1
