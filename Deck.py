@@ -62,13 +62,14 @@ class Deck:
                 self.updateBoard()
                 break  # Stops double growing the board
 
-
     def getFromBoard(self, colour) -> None:
         """
         Gets a card from the specified colour from the board
         :param colour: The colour to take
         :return: None
         """
+        if colour == Colour.ANY:
+            self.__num_loco -= 1
         self.__board.remove(colour)
         self.updateBoard()
 
@@ -83,10 +84,13 @@ class Deck:
         colour = None  # Fixes warning message
         for colour in Colour:  # Counts until it finds the colour which contains the number
             total += self.__counts[colour]
-            if total >= num:
+            if total >= num and self.__counts[colour] > 0:
                 self.__counts[colour] -= 1
                 self.__current_size -= 1
                 break
+
+        if self.__counts[colour] < 0:
+            raise ValueError("Tried to deal a card with less than 1 remaining")
 
         if self.__current_size == 0:  # Adds discarded cards when needed
             self.__reAddDiscarded()
