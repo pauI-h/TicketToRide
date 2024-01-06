@@ -32,6 +32,10 @@ class Player(ABC):
     def locations(self):
         return self.__locations.copy()  # Copy stops editing using pass by reference
 
+    @property
+    def trains(self):
+        return self.__trains
+
     def addToHand(self, colour):
         self.__hand[colour] += 1
 

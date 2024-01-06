@@ -1,3 +1,4 @@
+import math
 from unittest import TestCase
 
 from City import City
@@ -6,7 +7,7 @@ from Connection import Connection
 from Deck import Deck
 from Flight import Flight
 from LongestRouteFinder import findLongestRoute
-from Main import _scoreGame, _findPlayerLongestRoute
+from Main import _scoreGame, _findPlayerLongestRoute, _turn
 from Players.TestPlayer import TestPlayer
 from Route import Route
 from _Util import placeConnection
@@ -159,3 +160,10 @@ class TestScoring(TestCase):
                             [flight])
         score = scores[self.player_a]
         assert score == 15, "Score = " + str(score)
+
+    def testTurnNoEnd(self):
+        players = [self.player_a, self.player_b]
+
+        end_player = _turn(players, self.connections)
+
+        assert end_player == math.inf
